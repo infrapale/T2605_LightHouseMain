@@ -36,6 +36,9 @@ void io_initialize(void)
     #endif
     io_led_flash(LED_INDX_GREEN,10);
 
+    pinMode(PIN_ENABLE_WD, INPUT_PULLUP);  
+
+
 }
 
 void io_led_flash(led_index_et led_indx, uint16_t nbr_ticks )
@@ -62,4 +65,9 @@ void io_run_100ms(void)
           }
        } 
     }
+}
+
+bool io_wd_is_enabled(void)
+{
+    return (digitalRead(PIN_ENABLE_WD) == HIGH);
 }

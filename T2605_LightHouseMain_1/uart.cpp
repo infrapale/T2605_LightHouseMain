@@ -20,16 +20,12 @@ void uart_read_uart(void)
 {
     if (SerialX.available())
     {
-        io_led_flash(LED_INDX_BLUE,20);
         uart.rx.str = SerialX.readStringUntil('\n');
         if (uart.rx.str.length()> 0)
         {
             uart.rx.avail = true;
             //uart.rx.str.remove(uart.rx.str.length()-1);
         }
-        #ifdef DEBUG_PRINT
-        Serial.println("rx is available");
-        #endif        
     } 
 
 }

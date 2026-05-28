@@ -13,6 +13,7 @@
 // #define RFM69_IRQN    0  // Pin 2 is IRQ 0!
 #define RFM69_RST     11
 #endif
+#define PIN_ENABLE_WD A2
 
 #ifdef PRO_MINI_RFM69
 #define RFM69_CS      10
@@ -47,6 +48,8 @@ void io_initialize(void);
 void io_led_flash(led_index_et led_indx, uint16_t nbr_ticks );
 
 void io_run_100ms(void);
+
+bool io_wd_is_enabled(void);
 
 
 #endif

@@ -22,12 +22,9 @@ https://learn.sparkfun.com/tutorials/rfm69hcw-hookup-guide/all
 
 #include <Arduino.h>
 #include "main.h"
-#if defined(ADA_M0_RFM69) | defined(ADA_RFM69_WING)
-#include <wdt_samd21.h>
-#endif
-#ifdef PRO_MINI_RFM69
+#include <stdint.h>
+#include <avr/wdt.h>
 #include "avr_watchdog.h"
-#endif
 #include "secrets.h"
 #include <RH_RF69.h>
 #include <VillaAstridCommon.h>
@@ -38,8 +35,11 @@ https://learn.sparkfun.com/tutorials/rfm69hcw-hookup-guide/all
 #include "rfm_send.h"
 #include "io.h"
 #include "relay.h"
+#include "sensor.h"
 
-#define ZONE  "OD_1"
+#define ZONE  "RANTA"
+// #define WATCHDOG
+
 //*********************************************************************************************
 #define SERIAL_BAUD   9600
 #define ENCRYPTKEY    RFM69_KEY   // defined in secret.h
@@ -65,9 +65,8 @@ atask_st debug_print_handle        = {"Debug Print    ", 5000,0, 0, 255, 0, 1, d
 atask_st clock_handle              = {"Tick Task      ", 100,0, 0, 255, 0, 1, run_100ms};
 atask_st rfm_receive_handle        = {"Receive <- RFM ", 100,0, 0, 255, 0, 1, rfm_receive_task};
 
-
-#ifdef PRO_MINI_RFM69
-//AVR_Watchdog watchdog(4);
+#ifdef WATCHDOG
+AVR_Watchdog watchdog(8);
 #endif
 
 rfm_receive_msg_st  *receive_p;
@@ -82,10 +81,6 @@ void initialize_tasks(void)
   //atask_add_new(&debug_print_handle);
   atask_add_new(&clock_handle);
   atask_add_new(&rfm_receive_handle);
-
-  #ifdef SEND_TEST_MSG
-  atask_add_new(&send_test_data_handle);
-  #endif
 }
 
 
@@ -99,7 +94,10 @@ void setup()
     Serial.print(__APP__); Serial.print(F(" Compiled: "));
     Serial.print(__DATE__); Serial.print(" ");
     Serial.print(__TIME__); Serial.println();
-
+    #ifdef WATCHDOG
+        Serial.println(F("WD is enabled"));
+        watchdog.set_timeout(8);
+    #endif
     
     uart_initialize();
     uart_p = uart_get_data_ptr();
@@ -113,16 +111,7 @@ void setup()
     
     initialize_tasks();
     relay_initialize();
-
-    #if defined(ADA_M0_RFM69) | defined(ADA_RFM69_WING)
-    // Initialze WDT with a 2 sec. timeout
-    // wdt_init ( WDT_CONFIG_PER_16K );
-    #endif
-    #ifdef PRO_MINI_RFM69
-    //watchdog.set_timeout(4);
-    #endif
-
-    SerialX.println("Bluetooth Relay");
+    sensor_initialize();
 }
 
 
@@ -152,11 +141,8 @@ void rfm_receive_task(void)
         uart_p->rx.avail = false;
     }
     rfm_receive_message();
-    #if defined(ADA_M0_RFM69) | defined(ADA_RFM69_WING)
-    //wdt_reset();
-    #endif
-    #ifdef PRO_MINI_RFM69
-    // watchdog.clear();
+    #ifdef WATCHDOG
+    watchdog.clear();
     #endif
 }
 
