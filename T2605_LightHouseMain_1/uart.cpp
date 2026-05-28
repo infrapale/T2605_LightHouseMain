@@ -1,6 +1,5 @@
 #include "main.h"
 #include "uart.h"
-#include "json.h"
 #include "rfm_receive.h"
 #include "rfm_send.h"
 #include "io.h"
@@ -95,35 +94,6 @@ void uart_build_node_from_rx_str(void)
     
 }
 
-
-
-
-
-// void uart_build_node_tx_str(void)
-// {
-//     rfm_receive_msg_st *receive_p = rfm_receive_get_data_ptr();
-//     // <#X1N:RMH1;RKOK1;T;->\n   -> {"Z":"MH1","S":"RKOK1","V":"T","R":"-"}
-//     uart.rx.str = (char*) receive_p->radio_msg;  
-//     uart.tx.str = "<#X1a:";
-//     json_pick_data_from_rx(&uart);
-//     #ifdef DEBUG_PRINT
-//     Serial.print("radio_msg: ");
-//     Serial.println(uart.rx.str);  
-//     Serial.println(uart.node.zone);
-//     Serial.println(uart.node.name);
-//     Serial.println(uart.node.value);
-//     Serial.println(uart.node.remark);
-//     #endif
-//     uart.tx.str += uart.node.zone;
-//     uart.tx.str += ';';
-//     uart.tx.str += uart.node.name;
-//     uart.tx.str += ';';
-//     uart.tx.str += uart.node.value;
-//     uart.tx.str += ';';
-//     uart.tx.str += uart.node.remark;
-//     uart.tx.str += '>';
-// }
-
 void uart_build_raw_tx_str(void)
 {
     rfm_receive_msg_st *receive_p = rfm_receive_get_data_ptr();
@@ -139,46 +109,38 @@ void uart_rx_send_rfm_from_raw(void)
     rfm_send_radiate_msg(uart.rx.radio_msg);
 }
 
-void uart_rx_send_rfm_from_node(void)
-{
-    // uart.rx.str = uart.rx.str.substring(6,uart.rx.len - 1);
-    // uart_build_node_from_rx_str();
-    // rfm_send_msg_st *send_p = rfm_send_get_data_ptr();
-    // json_convert_uart_node_to_json(send_p->radio_msg, &uart);
-    // rfm_send_radiate_msg(send_p->radio_msg);
-}
 
 void uart_exec_cmnd(uart_cmd_et ucmd)
 {
-    String str = "<#Xux:0>";
-    str[3] = me.addr;
-    switch(ucmd)
-    {
-        case UART_CMD_TRANSMIT_RAW:
-            io_led_flash(LED_INDX_RED, 10);
-            uart_rx_send_rfm_from_raw();
-            break;
-        case UART_CMD_TRANSMIT_NODE:
-            io_led_flash(LED_INDX_RED, 20);
-            uart_rx_send_rfm_from_node();
-            break;
-        case UART_CMD_GET_AVAIL:
-            str[4] = UART_REPLY_AVAILABLE;
-            if(rfm_receive_message_is_avail()) str[6] = '1';
-            SerialX.println(str);
-            break;
-        case UART_CMD_READ_RAW:
-            rfm_receive_clr_message_flag();
-            uart_build_raw_tx_str();
-            SerialX.println(uart.tx.str);          
-            break;
-        case UART_CMD_READ_NODE:
-            rfm_receive_clr_message_flag();
-            // uart_build_node_tx_str();
-            SerialX.println(uart.tx.str);          
-          break;
+    // String str = "<#Xux:0>";
+    // str[3] = me.addr;
+    // switch(ucmd)
+    // {
+    //     case UART_CMD_TRANSMIT_RAW:
+    //         io_led_flash(LED_INDX_RED, 10);
+    //         uart_rx_send_rfm_from_raw();
+    //         break;
+    //     case UART_CMD_TRANSMIT_NODE:
+    //         io_led_flash(LED_INDX_RED, 20);
+    //         uart_rx_send_rfm_from_node();
+    //         break;
+    //     case UART_CMD_GET_AVAIL:
+    //         str[4] = UART_REPLY_AVAILABLE;
+    //         if(rfm_receive_message_is_avail()) str[6] = '1';
+    //         SerialX.println(str);
+    //         break;
+    //     case UART_CMD_READ_RAW:
+    //         rfm_receive_clr_message_flag();
+    //         uart_build_raw_tx_str();
+    //         SerialX.println(uart.tx.str);          
+    //         break;
+    //     case UART_CMD_READ_NODE:
+    //         rfm_receive_clr_message_flag();
+    //         // uart_build_node_tx_str();
+    //         SerialX.println(uart.tx.str);          
+    //       break;
 
-    }
+    // }
 }
 
 

@@ -167,14 +167,13 @@ void msg_handle(char *in_msg)
                     if(strncmp(msg.fields[3], "PEER", MSG_MAX_FIELD_LEN) == 0) rindx = 0;
                     if (rindx < MAX_RELAY)
                     {
-                        Serial.println(F("Pump message"));
-                        res = str_to_int16(msg.fields[4], &i16, 0, 120);
+                        Serial.println(F("Ranta message"));
+                        res = str_to_int16(msg.fields[4], &i16, 0, 7200);
                         if(res == 0) {
-                            Serial.print(F("Minutes: ")); Serial.println(i16);
-                            relay_test();
-                            if(i16 > 0) relay_turn_on(rindx);
-                            else relay_turn_off(rindx);
-                        } else {
+                            Serial.print(F("Seconds: ")); Serial.println(i16);
+                            relay_on_of_timer(rindx, i16);
+                        }
+                        else {
                             Serial.print(F("Incorrect value ")); Serial.println(res);
                         }
 

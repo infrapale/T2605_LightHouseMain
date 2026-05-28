@@ -14,6 +14,8 @@ void relay_turn_on(byte relay_indx);
 
 void relay_turn_off(byte relay_indx);
 
-void relay_do_every_10ms(void);
+void relay_on_of_timer(uint8_t relay_indx, uint16_t seconds);
+
+void relay_do_every_100ms(void);
 
 #endif

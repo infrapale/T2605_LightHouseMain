@@ -7,7 +7,6 @@
 #include "rfm69.h"
 #include "rfm_send.h"
 #include "main.h"
-#include "json.h"
 
 extern module_data_st  me;
 extern RH_RF69 *rf69p;
